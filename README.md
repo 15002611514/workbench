@@ -50,32 +50,20 @@ node server.js
 ## 部署到免费云（推荐：解决笔记本关机问题）
 把"同步服务器"部署到永远在线的云平台后，手机和电脑**随时随地都能同步**，不再依赖笔记本开机。
 
-### 准备（本项目已就绪）
-- `server/server.js` 已读取 `process.env.PORT` 并绑定 `0.0.0.0`
-- 已有 `Procfile`（`web: node server/server.js`）和 `package.json` 的 start 脚本
-- 运行：`node server/server.js`（本地或云端同一命令）
+本项目已做成**云就绪**：
+- 服务器 `server/server.js` 读取 `process.env.PORT` 并绑定 `0.0.0.0`
+- 有 `package.json`（根目录，`start: node server/server.js`）、`Procfile`
+- **双存储自动切换**：设置了 `DATABASE_URL` 环境变量 → 用 PostgreSQL（云端持久）；没设 → 用本地 JSON 文件
 
-### 以 Render 为例（免费额度，需注册免费账号）
-1. 注册 https://render.com （免费版即可，可能需要绑定一张卡做验证；不想绑卡可改用 Koyeb / Railway）。
-2. 准备代码仓库：把整个 `workbench` 目录推到你的 GitHub（新建仓库 → `git init` / `git add` / `git commit` / `git push`）。
-3. Render 控制台 → New → Web Service → 连你的 GitHub 仓库。
-4. 关键设置：
-   - Build Command：`npm install`（在仓库根目录；若 server 在子目录，改为 `cd server && npm install`）
-   - Start Command：`node server/server.js`
-   - 实例类型：Free
-5. 部署完成后 Render 给一个 `xxx.onrender.com` 地址。手机、电脑都访问这个地址即可，数据自动同步。
-6. 以后想要自己的域名，在 Render 里绑 Custom Domain。
+👉 **完整图文步骤见 `DEPLOY.md`**（已选方案：GitHub + Koyeb，免绑卡，且 Koyeb 送免费 PostgreSQL，数据重部署不丢）。
 
-> 其它平台同理：Railway（`railway up`）、Koyeb、Fly.io，都是 `node server/server.js` 启动、读取 PORT 环境变量。
-
-### ⚠️ 关于云端数据持久化（重要）
-免费云实例的硬盘在**重新部署时会被清空**，所以：
-- 每个用过的设备（手机/电脑）本地都**保留一份完整数据**，云端清空后下次联网会自动补回；
-- 请定期用网页底部"**导出备份**"下载 JSON 留底（最稳妥的保险）。
-- 若要云端数据也永久不丢，可改用数据库存储（如免费 Neon Postgres），需要我再帮你升级。
+### 关于云端数据持久化
+- 云端用 PostgreSQL 时数据持久，重部署不丢；
+- 每个设备本地也保留完整副本，云端异常时会自动回退到本地文件并继续运行；
+- 仍建议定期用网页底部「导出备份」下载 JSON 留底。
 
 ## 数据备份
-网页底部有"导出备份 / 导入备份"，可随时导出 JSON 留底。服务器 `server/data/records.json` 也是完整数据文件。
+网页底部有"导出备份 / 导入备份"，可随时导出 JSON 留底。本地模式下服务器 `server/data/records.json` 也是完整数据文件。
 
 ## 自定义
 - 财务类别、补助标准等直接在页面下拉框/输入框调整。
