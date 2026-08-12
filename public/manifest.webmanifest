@@ -1,0 +1,19 @@
+{
+  "name": "纪念 · 双身份工作台",
+  "short_name": "双身份工作台",
+  "description": "甘肃鼎天测控科技(财务) 与 甘肃翰亚科技(出差) 双身份记录与同步工作台",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#eef1f6",
+  "theme_color": "#2f6df0",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
