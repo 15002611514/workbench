@@ -1,56 +1,78 @@
-# 部署到 Koyeb（免费 · 免绑卡 · 送 PostgreSQL）
+# 部署到 Render + Neon（免费 · 免绑卡 · 数据持久）
+
+> 注：原先推荐的 Koyeb 自 2026 年 2 月被 Mistral 收购后，**新用户已无法使用免费 Starter 档**（需订阅 $29/月起的 Pro）。本项目已改为更稳妥的 **Render（免费托管应用） + Neon（免费 PostgreSQL 数据库）** 组合，两样都不用绑卡。
 
 目标：把同步服务器部署到云端 7×24 在线，手机和电脑**随时随地都能同步**，笔记本关机也不影响。
 
 ## 前置（全部免费、不用绑卡）
-- **GitHub 账号**：https://github.com （注册免费）
-- **Koyeb 账号**：https://koyeb.com （注册免费，无需信用卡）
-
-本机 `workbench/` 目录里的代码已经 `git` 提交好了，你只需要把它推到你的 GitHub，再在 Koyeb 点几下。
+- **GitHub 账号**：https://github.com（已注册，代码仓库 `你的用户名/workbench` 已就绪）
+- **Render 账号**：https://render.com（注册免费，可用 GitHub 直接登录）
+- **Neon 账号**：https://neon.tech（注册免费，可用 GitHub 直接登录）
 
 ---
 
-## 第 1 步：推送到你的 GitHub
-1. 在 GitHub 网页 **New repository** 新建仓库（名字如 `workbench`，私有/公开均可，建议私有）。
-2. 在本机 `workbench/` 目录的终端执行（把 URL 换成你的仓库地址）：
-   ```bash
-   git remote add origin https://github.com/你的用户名/workbench.git
-   git branch -M main
-   git push -u origin main
-   ```
-   - 提示输入密码时，用 GitHub **个人访问令牌(PAT)** 当密码（GitHub 已不支持账号密码推送）。
-   - 令牌生成：GitHub → 头像 → Settings → Developer settings → Personal access tokens → 勾选 `repo` 权限生成。
-3. 不会用命令行？可装 **GitHub Desktop** 登录后拖入 `workbench` 目录推送；或在 GitHub 网页逐个上传文件（保持 `server/`、`public/` 目录结构）。
+## 第 1 步：注册 Neon 并创建免费 Postgres 数据库
+1. 打开 https://neon.tech → 用 GitHub 登录。
+2. 控制台 → **New Project** → 项目名如 `workbench-db` → 区域选 **Singapore**（离中国最近）。
+3. 创建后进入项目 → 左侧 **Connection Details** → 把 **Connection string** 复制下来（形如 `postgresql://user:pass@ep-xxx.ap-southeast-1.aws.neon.tech/dbname?sslmode=require`）。
+4. 这个连接串就是 `DATABASE_URL`，先保存到记事本，等下贴到 Render。
 
-## 第 2 步：Koyeb 创建服务
-1. 登录 Koyeb → 控制台 → **Create App**（或 **Services → Create Service**）。
-2. 来源选 **GitHub**，授权并选中你的 `workbench` 仓库。
-3. 分支 `main`；**Build 方式选 "Buildpacks (Node.js)"**（Koyeb 会自动 `npm install` 并识别 `package.json` 的 start 脚本）。
-4. **Run command**：`node server/server.js`（Buildpacks 已自动识别可留空）。
-5. **Port**：`3000`。
-6. 实例类型选免费 **Nano**（免卡）。
+> Neon 免费档：0.5 GB 存储、无需信用卡、数据持久（计算节点会休眠，但存储层永久保存，有请求时自动唤醒）。
 
-## 第 3 步：附加免费 PostgreSQL（数据永久不丢）
-1. Koyeb 控制台 → **Databases → Create Database** → 选 **PostgreSQL**，类型选免费档。
-2. 创建完成后，在数据库详情里复制 **Connection string**（形如 `postgresql://user:pass@host:5432/db?sslmode=disable`）。
-3. 回到你的 Service → **Settings → Environment variables** → 新增：
+---
+
+## 第 2 步：在 Render 部署 Web 服务
+1. 打开 https://render.com → 用 GitHub 登录。
+2. 控制台 → 右上角 **+ New** → **Web Service**。
+3. 来源选 **Build and deploy from a Git repository** → **Connect account**（授权 GitHub）→ 选中你的 `workbench` 仓库。
+4. 填写表单：
+   - **Name**：`shuang-shenfen-workbench`（会决定访问域名）
+   - **Region**：**Singapore**
+   - **Branch**：`master`
+   - **Runtime**：**Node**
+   - **Build Command**：`npm install`
+   - **Start Command**：`npm start`
+   - **Instance Type**：**Free**（免费档，右下角勾选）
+5. 点 **Advanced** → **Add Environment Variable**：
    - Key：`DATABASE_URL`
-   - Value：刚才复制的连接串
-4. 保存并 **Redeploy**。服务器检测到 `DATABASE_URL` 会自动建表并改用数据库存储；本地没设该变量时仍用本地 JSON 文件（两种模式自动切换）。
+   - Value：刚才从 Neon 复制的连接串
+6. 点页面底部 **Create Web Service**。
 
-## 第 4 步：访问
-部署完成后 Koyeb 给一个 `https://你的服务名.koyeb.app` 地址。手机、电脑都访问这个地址即可，数据自动同步。
-- 想要自己的域名：Koyeb 里绑 **Custom Domain**。
-- 手机端：浏览器打开该地址 → 「添加到主屏幕」，变成 App。
+> 项目根目录已有 `render.yaml`，如果你使用 Render 的 **Blueprint / Preview Environments**，它会自动按此配置；手动创建时按上面表单填即可。
+
+---
+
+## 第 3 步：访问地址
+部署完成后，Render 会给你一个类似：
+```
+https://shuang-shenfen-workbench.onrender.com
+```
+- 手机和电脑都访问这个地址即可。
+- 想要自己的域名：Render 控制台 → 该服务 → **Settings → Custom Domains**。
 
 ---
 
 ## 验证是否成功
-- 浏览器打开 `https://你的服务名.koyeb.app/api/status`，应返回含 `"storage":"postgres"` 的 JSON（说明已用数据库）。
-- 在手机和电脑各录一条数据，互相刷新即可看到同步。
+浏览器打开：
+```
+https://shuang-shenfen-workbench.onrender.com/api/status
+```
+应返回 JSON：
+```json
+{
+  "ok": true,
+  "storage": "postgres",
+  "count": 0
+}
+```
+如果看到 `"storage":"postgres"`，说明已成功连上 Neon 数据库，数据会持久保存。
+
+在手机和电脑各录一条数据，互相刷新即可看到同步。
+
+---
 
 ## 注意事项
-- 免费实例空闲约 1 小时后会缩容到零，再次访问有 1–2 秒冷启动，稍等即可。
-- 数据库在免费额度内**持久保存**，重部署不丢。
+- **免费 Web 服务 15 分钟无访问会“睡眠”**，下次访问需冷启动约 30-60 秒，稍等即可。
+- **冷启动后数据不会丢**：因为用了 Neon Postgres，数据存在 Neon；启动后服务器会自动连库。
+- 若 `DATABASE_URL` 填错导致数据库连不上，服务器会**自动回退到本地 JSON 文件**继续运行，不会崩；但云端不会持久，重新部署后可能清空，所以务必确认 `/api/status` 返回 `postgres`。
 - 仍建议定期用网页底部「导出备份」下载 JSON 留底（双保险）。
-- 若 `DATABASE_URL` 填错导致数据库连不上，服务器会**自动回退到本地文件**并继续运行，不会崩。

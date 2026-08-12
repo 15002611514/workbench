@@ -55,7 +55,9 @@ node server.js
 - 有 `package.json`（根目录，`start: node server/server.js`）、`Procfile`
 - **双存储自动切换**：设置了 `DATABASE_URL` 环境变量 → 用 PostgreSQL（云端持久）；没设 → 用本地 JSON 文件
 
-👉 **完整图文步骤见 `DEPLOY.md`**（已选方案：GitHub + Koyeb，免绑卡，且 Koyeb 送免费 PostgreSQL，数据重部署不丢）。
+👉 **完整图文步骤见 `DEPLOY.md`**（已选方案：GitHub + **Render + Neon**，均免绑卡：Render 免费跑 Node 应用，Neon 免费跑 PostgreSQL，数据持久不丢）。
+
+> 注：原先推荐的 Koyeb 自 2026 年 2 月起被 Mistral 收购，新用户无法再使用免费 Starter 档，已改用 Render + Neon。
 
 ### 关于云端数据持久化
 - 云端用 PostgreSQL 时数据持久，重部署不丢；

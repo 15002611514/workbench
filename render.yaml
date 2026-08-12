@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: shuang-shenfen-workbench
+    runtime: node
+    plan: free
+    region: singapore
+    branch: master
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/status
+    envVars:
+      - key: DATABASE_URL
+        sync: false
