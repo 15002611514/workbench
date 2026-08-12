@@ -13,7 +13,7 @@
 
 ## 第 1 步：注册 Neon 并创建免费 Postgres 数据库
 1. 打开 https://neon.tech → 用 GitHub 登录。
-2. 控制台 → **New Project** → 项目名如 `workbench-db` → 区域选 **Singapore**（离中国最近）。
+2. 控制台 → **New Project** → 项目名如 `workbench-db` → 区域选 **Singapore**（离中国最近）。你实际创建在 **US East (Ohio)** 也没问题，只要第 2 步 Render 选**同一个区域**即可（同区域延迟最低）。
 3. 创建后进入项目 → 左侧 **Connection Details** → 把 **Connection string** 复制下来（形如 `postgresql://user:pass@ep-xxx.ap-southeast-1.aws.neon.tech/dbname?sslmode=require`）。
 4. 这个连接串就是 `DATABASE_URL`，先保存到记事本，等下贴到 Render。
 
@@ -27,7 +27,7 @@
 3. 来源选 **Build and deploy from a Git repository** → **Connect account**（授权 GitHub）→ 选中你的 `workbench` 仓库。
 4. 填写表单：
    - **Name**：`shuang-shenfen-workbench`（会决定访问域名）
-   - **Region**：**Singapore**
+   - **Region**：**US East (Ohio)**（与你的 Neon 数据库同区域；若 Neon 在 Singapore 则选 Singapore）
    - **Branch**：`master`
    - **Runtime**：**Node**
    - **Build Command**：`npm install`
