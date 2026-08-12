@@ -152,8 +152,15 @@ const server = http.createServer(async (req, res) => {
     return send(res, 200, JSON.stringify({ ok: true, count: c, storage: pgOk ? 'postgres' : 'json' }));
   }
 
-  // 返回电脑局域网 IP，方便手机连接
+  // 返回可访问地址，方便手机连接
+  // 云端部署时设 PUBLIC_URL（公网 IP 或域名），手机扫码直达公网地址
   if (pathname === '/api/info' && req.method === 'GET') {
+    const publicUrl = process.env.PUBLIC_URL;
+    if (publicUrl) {
+      return send(res, 200, JSON.stringify({
+        port: PORT, ips: [publicUrl], url: publicUrl, cloud: true
+      }));
+    }
     const ifaces = os.networkInterfaces();
     const ips = [];
     for (const k in ifaces) {

@@ -273,11 +273,14 @@ function loadConnect() {
   const sel = document.getElementById('ipSelect');
   sel.innerHTML = '';
   fetch('/api/info').then(r => r.json()).then(d => {
+    // 云端部署：ips 已是完整地址（如 http://公网IP:3000）
+    const isCloud = !!d.cloud;
     const base = d.ips.length ? d.ips : ['localhost'];
     base.forEach(ip => {
+      const full = isCloud ? ip : ('http://' + ip + ':' + d.port);
       const o = document.createElement('option');
-      o.value = 'http://' + ip + ':' + d.port;
-      o.textContent = ip;
+      o.value = full;
+      o.textContent = isCloud ? ip : (ip + ':' + d.port);
       sel.appendChild(o);
     });
     applyConnUrl(sel.value);
